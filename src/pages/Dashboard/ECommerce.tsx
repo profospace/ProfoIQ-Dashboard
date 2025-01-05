@@ -209,24 +209,50 @@ useEffect(() => {
         })
       );
 
+      console.log(responses)
+
       // Get all dates and find the most recent date
       const allDates = responses.flatMap(propertyData => 
         propertyData.map(entry => entry.date)
       );
       const mostRecentDate = allDates.sort().reverse()[0];
       
-      // Calculate today's visitors
-      const todayVisitors = {};
-      responses.forEach(propertyData => {
-        const todayData = propertyData.find(entry => entry.date === mostRecentDate);
-        if (todayData) {
-          todayData.details.forEach(detail => {
-            if (detail.type === 'VISIT') {
-              todayVisitors[detail.userName] = (todayVisitors[detail.userName] || 0) + 1;
-            }
-          });
-        }
-      });
+      // // Calculate today's visitors
+      // const todayVisitors = {};
+      // responses.forEach(propertyData => {
+      //   const todayData = propertyData.find(entry => entry.date === mostRecentDate);
+      //   if (todayData) {
+      //     todayData.details.forEach(detail => {
+      //       if (detail.type === 'VISIT') {
+      //         todayVisitors[detail.userName] = (todayVisitors[detail.userName] || 0) + 1;
+      //       }
+      //     });
+      //   }
+      // });
+
+      // Get today's date in YYYY-MM-DD format
+const todayDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+// Calculate today's visitors
+const todayVisitors = {};
+responses.forEach(propertyData => {
+  const todayData = propertyData.find(entry => entry.date === todayDate); // Check for today's date
+  if (todayData) {
+    todayData.details.forEach(detail => {
+      if (detail.type === 'VISIT') {
+        todayVisitors[detail.userName] = (todayVisitors[detail.userName] || 0) + 1;
+      }
+    });
+  }
+});
+
+// Get the most frequent visitor (Top Visitor)
+const topVisitor = Object.entries(todayVisitors).reduce((top, [userName, visits]) => {
+  return visits > top.visits ? { userName, visits } : top;
+}, { userName: '', visits: 0 });
+
+console.log('Top Visitor Today:', topVisitor);
+
 
       // Calculate monthly visitors
       const currentMonth = mostRecentDate.substring(0, 7); // YYYY-MM

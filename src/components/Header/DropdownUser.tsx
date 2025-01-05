@@ -1,10 +1,28 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [name , setName] = useState('')
+  const [username , setUsername] = useState('')
+  const navigate = useNavigate()
+  const handlelogout = ()=>{
+    const data = localStorage.getItem('builder-id') && localStorage.removeItem('builder-id')
+    navigate('/auth/signin')
+    console.log("LOGOUT" , data)
+  }
+
+  useEffect(
+    ()=>{
+      const {name , username} = localStorage.getItem('builder-id') && JSON.parse(localStorage.getItem('builder-id'))
+      setName(name)
+      setUsername(username)
+      console.log("DTAA",name , username)
+    }
+  )
+
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -15,9 +33,9 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Thomas Anree
+           {name && name} 
           </span>
-          <span className="block text-xs">UX Designer</span>
+          <span className="block text-xs">{username && username}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
@@ -119,7 +137,7 @@ const DropdownUser = () => {
               </Link>
             </li>
           </ul>
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" onClick={handlelogout}>
             <svg
               className="fill-current"
               width="22"

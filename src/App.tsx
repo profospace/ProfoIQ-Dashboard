@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
@@ -17,6 +17,19 @@ import Alerts from './pages/UiElements/Alerts';
 import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 
+// PrivateRoute Component
+function PrivateRoute({ children }: { children: React.ReactNode }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const builderId = localStorage.getItem('builder-id') || false;
+    if (!builderId) {
+      navigate('/auth/signin');
+    }
+  }, [navigate]);
+
+  return <>{children}</>;
+}
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
@@ -29,17 +42,44 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
+
+
+
   return loading ? (
     <Loader />
   ) : (
-    <DefaultLayout>
-      <Routes>
+    <Routes>
+        <Route
+          path="/auth/signin"
+          element={
+            <>
+              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <SignIn />
+            </>
+          }
+          />
+        {/* <Route
+          path="/auth/signup"
+          element={
+            <>
+              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <SignUp />
+            </>
+          }
+          /> */}
+
+{/* Protected Routes */}
+      
         <Route
           index
           element={
             <>
+            <PrivateRoute>
+            <DefaultLayout>
               <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <ECommerce />
+              </DefaultLayout>
+            </PrivateRoute>
             </>
           }
         />
@@ -47,8 +87,12 @@ function App() {
           path="/calendar"
           element={
             <>
+            <PrivateRoute>
+            <DefaultLayout>
               <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Calendar />
+            </DefaultLayout>
+            </PrivateRoute>
             </>
           }
         />
@@ -124,26 +168,8 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/auth/signin"
-          element={
-            <>
-              <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignIn />
-            </>
-          }
-        />
-        <Route
-          path="/auth/signup"
-          element={
-            <>
-              <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-              <SignUp />
-            </>
-          }
-        />
+        
       </Routes>
-    </DefaultLayout>
   );
 }
 
