@@ -21,7 +21,11 @@ const ECommerce =  () => {
     const [selectedPropertyId, setSelectedPropertyId] = useState(null);
     const [singlePropertyStats, setSinglePropertyStats] = useState([]);
     const lineChartRef = useRef(null);
+    const [totalViews, setTotalViews] = useState(0)
+    const [todayTopVisitor , setTodayTopVisitor] = useState({}) //  object will have name , visits
+    const [monthlyTopVisitor , setMonthlyTopVisitor] = useState({})
 
+    console.log("singlePropertyStats",singlePropertyStats)
 
     const fetchProperties = async () => {
         // getting builder id from localstorage
@@ -161,10 +165,127 @@ const ECommerce =  () => {
       },[]
     )
 
+
+    useEffect(() => {
+    const totalVisited = properties.reduce((total, property) => total + property.visted, 0);
+    setTotalViews(totalVisited);
+    // console.log(totalVisited);
+}, [properties]);
+
+
+
+
+// // Colllecting data of Interaction for total , monthly , daily TOP visitor
+// useEffect(() => {
+//   const fetchData = async () => {
+//     try {
+//       const responses = await Promise.all(
+//         properties.map(async (property) => {
+//           const response = await axios.get(
+//             `http://localhost:5053/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
+//           );
+//           return response.data.data; // This will hold the data for each property
+//         })
+//       );
+//       // You can use 'responses' to handle the data for each property
+//       console.log(responses); // This logs all the API responses for each property
+//     } catch (error) {
+//       console.error("Error fetching data: ", error);
+//     }
+//   };
+
+//   fetchData();
+// }, [properties]); 
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const responses = await Promise.all(
+        properties.map(async (property) => {
+          const response = await axios.get(
+            `http://localhost:5053/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
+          );
+          return response.data.data;
+        })
+      );
+
+      // Get all dates and find the most recent date
+      const allDates = responses.flatMap(propertyData => 
+        propertyData.map(entry => entry.date)
+      );
+      const mostRecentDate = allDates.sort().reverse()[0];
+      
+      // Calculate today's visitors
+      const todayVisitors = {};
+      responses.forEach(propertyData => {
+        const todayData = propertyData.find(entry => entry.date === mostRecentDate);
+        if (todayData) {
+          todayData.details.forEach(detail => {
+            if (detail.type === 'VISIT') {
+              todayVisitors[detail.userName] = (todayVisitors[detail.userName] || 0) + 1;
+            }
+          });
+        }
+      });
+
+      // Calculate monthly visitors
+      const currentMonth = mostRecentDate.substring(0, 7); // YYYY-MM
+      const monthlyVisitors = {};
+      responses.forEach(propertyData => {
+        propertyData.forEach(entry => {
+          if (entry.date.startsWith(currentMonth)) {
+            entry.details.forEach(detail => {
+              if (detail.type === 'VISIT') {
+                monthlyVisitors[detail.userName] = (monthlyVisitors[detail.userName] || 0) + 1;
+              }
+            });
+          }
+        });
+      });
+
+      // Sort and get top visitors
+      const todayTopVisitor = Object.entries(todayVisitors)
+        .sort(([,a], [,b]) => b - a)[0] || ['No visitors', 0];
+      
+      const monthlyTopVisitor = Object.entries(monthlyVisitors)
+        .sort(([,a], [,b]) => b - a)[0] || ['No visitors', 0];
+
+      console.log('Most Recent Date:', mostRecentDate);
+      console.log('Today\'s Top Visitor:', {
+        name: todayTopVisitor[0],
+        visits: todayTopVisitor[1]
+      });
+
+      setTodayTopVisitor({
+        name: todayTopVisitor[0],
+        visits: todayTopVisitor[1]
+      })
+
+      console.log('Monthly Top Visitor:', {
+        name: monthlyTopVisitor[0],
+        visits: monthlyTopVisitor[1]
+      });
+      setMonthlyTopVisitor({
+        name: monthlyTopVisitor[0],
+        visits: monthlyTopVisitor[1]
+      })
+      
+      // Log all visitors for verification
+      console.log('\nAll Today\'s Visitors:', todayVisitors);
+      console.log('All Monthly Visitors:', monthlyVisitors);
+
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  fetchData();
+}, [properties]);
+
   return (
     <>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
-        <CardDataStats title="Total views" total="$3.456K" rate="0.43%" levelUp>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
+        <CardDataStats title="Total Visitors" total={totalViews ? totalViews : "____"} rate="0.43%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -183,7 +304,7 @@ const ECommerce =  () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
+        {/* <CardDataStats title="Total Profit" total="$45,2K" rate="4.35%" levelUp>
           <svg
             className="fill-primary dark:fill-white"
             width="20"
@@ -205,8 +326,8 @@ const ECommerce =  () => {
               fill=""
             />
           </svg>
-        </CardDataStats>
-        <CardDataStats title="Total Product" total="2.450" rate="2.59%" levelUp>
+        </CardDataStats> */}
+        <CardDataStats title="Today Top Visitor" total={todayTopVisitor && `${todayTopVisitor.name} (${todayTopVisitor.visits} visits)`}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -225,7 +346,7 @@ const ECommerce =  () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Total Users" total="3.456" rate="0.95%" levelDown>
+        <CardDataStats title="Monthly Top Visitor" total={monthlyTopVisitor && `${monthlyTopVisitor.name} (${monthlyTopVisitor.visits} visits)`} >
           <svg
             className="fill-primary dark:fill-white"
             width="22"
