@@ -24,7 +24,7 @@ const CalendarLight = ({ selectedDate, onDateChange, highlightedDates }) => {
 
 
     return (
-        <div className="mt-8 rounded-lg w-full max-w-md">
+        <div className="mt-8 rounded-lg max-w-xl">
             <h3 className="text-xl font-semibold text-gray-700 mb-6 text-start">Select a Date</h3>
             <Calendar
                 onChange={onDateChange}
