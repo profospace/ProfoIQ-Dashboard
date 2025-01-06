@@ -5,10 +5,23 @@ import 'react-calendar/dist/Calendar.css'; // Import the default styles for reac
 const CalendarLight = ({ selectedDate, onDateChange, highlightedDates }) => {
     console.log("highlightedDates", highlightedDates)
 
+    // const isDateHighlighted = (date) => {
+    //     const formattedDate = date.toISOString().split('T')[0];
+    //     return highlightedDates.includes(formattedDate);
+    // };
+
+    const formatDateToYYYYMMDD = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     const isDateHighlighted = (date) => {
-        const formattedDate = date.toISOString().split('T')[0];
+        const formattedDate = formatDateToYYYYMMDD(date);
         return highlightedDates.includes(formattedDate);
     };
+
 
     return (
         <div className="mt-8 rounded-lg w-full max-w-md">

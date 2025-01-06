@@ -7,6 +7,7 @@ const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [name , setName] = useState('')
   const [username , setUsername] = useState('')
+  const [logo, setLogo] = useState('')
   const navigate = useNavigate()
   const handlelogout = ()=>{
     const data = localStorage.getItem('builder-id') && localStorage.removeItem('builder-id')
@@ -16,9 +17,10 @@ const DropdownUser = () => {
 
   useEffect(
     ()=>{
-      const {name , username} = localStorage.getItem('builder-id') && JSON.parse(localStorage.getItem('builder-id'))
+      const {name , username, logo} = localStorage.getItem('builder-id') && JSON.parse(localStorage.getItem('builder-id'))
       setName(name)
       setUsername(username)
+      setLogo(logo)
       console.log("DTAA",name , username)
     }
   )
@@ -39,7 +41,8 @@ const DropdownUser = () => {
         </span>
 
         <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+          {/* <img src={UserOne} alt="User" /> */}
+          <img src={logo && logo} alt="User" />
         </span>
 
         <svg
