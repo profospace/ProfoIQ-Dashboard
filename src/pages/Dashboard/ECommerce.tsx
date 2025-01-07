@@ -35,11 +35,11 @@ const ECommerce = () => {
 
   const fetchProperties = async () => {
     // getting builder id from localstorage
-    // const payload = JSON.parse(localStorage.getItem('builder-id'))
-    // console.log(payload)
+    const payload = JSON.parse(localStorage.getItem('builder-id'))
+    console.log(payload)
     try {
-      // const response = await axios.get(`http://localhost:5053/api/builders/${payload?.id}/properties`);
-      const response = await axios.get(`http://localhost:5053/api/builders/6763ca5d2c71a5e27c41f783/properties`);
+      const response = await axios.get(`http://localhost:5053/api/builders/${payload?.id}/properties`);
+      // const response = await axios.get(`http://localhost:5053/api/builders/6763ca5d2c71a5e27c41f783/properties`);
 
       console.log(response)
       if (response.data.success) {
@@ -404,7 +404,7 @@ const ECommerce = () => {
             />
           </svg>
         </CardDataStats> */}
-        <CardDataStats title="Today Top Visitor" total={todayTopVisitor && `${todayTopVisitor.name} (${todayTopVisitor.visits} visits)`}>
+        <CardDataStats title="Today Top Visitor" total={todayTopVisitor && `${todayTopVisitor.name ? todayTopVisitor.name : "___________"} (${todayTopVisitor.visits || 0} visits)`}>
           <svg
             className="fill-primary dark:fill-white"
             width="22"
@@ -423,7 +423,7 @@ const ECommerce = () => {
             />
           </svg>
         </CardDataStats>
-        <CardDataStats title="Monthly Top Visitor" total={monthlyTopVisitor && `${monthlyTopVisitor.name} (${monthlyTopVisitor.visits} visits)`} >
+        <CardDataStats title="Monthly Top Visitor" total={monthlyTopVisitor && `${monthlyTopVisitor.name ? monthlyTopVisitor.name : "___________"} (${monthlyTopVisitor.visits || 0} visits)`} >
           <svg
             className="fill-primary dark:fill-white"
             width="22"

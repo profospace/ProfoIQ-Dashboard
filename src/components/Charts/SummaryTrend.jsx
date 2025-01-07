@@ -315,7 +315,7 @@ import {
 // Register required components
 ChartJS.register(CategoryScale, LinearScale, LineElement, Title, Tooltip, Legend);
 
-function SummaryTrend({ singlePropertyStats, selectedDate }) {
+function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
     const [view, setView] = useState(selectedDate ? 'selectedDate' : 'week'); // Default to 'selectedDate' if available
 
     useEffect(() => {
@@ -417,7 +417,7 @@ function SummaryTrend({ singlePropertyStats, selectedDate }) {
     return (
         <div>
             {/* Tabs */}
-            <div className="flex space-x-4 mb-4 mt-8">
+            <div className="flex space-x-4 mb-4 mt-8" >
                 {['selectedDate', '3days', 'week', 'month', 'quarter'].map((tab) => (
                     <button
                         key={tab}
@@ -430,7 +430,7 @@ function SummaryTrend({ singlePropertyStats, selectedDate }) {
             </div>
 
             {/* Chart */}
-            <div className="bg-white p-6 shadow rounded-lg w-full min-h-52">
+            <div className="bg-white p-6 shadow rounded-lg w-full min-h-52" ref={lineChartRef}>
                 <Line data={lineChartData} options={lineChartOptions} />
             </div>
         </div>

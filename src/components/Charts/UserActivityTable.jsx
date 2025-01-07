@@ -18,7 +18,10 @@ function UserActivityTable({ filteredActivities, lineChartRef, selectedPropertyI
         const data = filteredActivities.map((activity) => ({
             Username: showUserDetails ? activity.userName : '✘',
             VisitType: activity?.metadata?.visitType || "N/A",
-            Date_Time: activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A',
+            // Date_Time: activity.timestamp ? new Date(activity.timestamp).toLocaleString() : 'N/A',
+            Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
+            Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
+
             Activity_Type: activity.type ? activity.type : 'N/A',
             // ContactNo: activity?.metadata?.phone || "N/A",
             // Email: activity?.metadata?.email || "N/A",
@@ -169,7 +172,8 @@ function UserActivityTable({ filteredActivities, lineChartRef, selectedPropertyI
                               <tr className="bg-gray-100">
                                   <th className="px-4 py-2">Username</th>
                                   <th className="px-4 py-2">Activity Type</th>
-                                  <th className="px-4 py-2">Timestamp</th>
+                                  <th className="px-4 py-2">Date</th>
+                                  <th className="px-4 py-2">Time</th>
                                   <th className="px-4 py-2">Visit Type</th>
                                   <th className="px-4 py-2">Contact No.</th>
                                   <th className="px-4 py-2">Email</th>
@@ -184,8 +188,14 @@ function UserActivityTable({ filteredActivities, lineChartRef, selectedPropertyI
                                       </td>
                                       <td className="px-4 py-2">{activity.type}</td>
                                       <td className="px-4 py-2">
-                                          {new Date(activity.timestamp).toLocaleString()}
+                                          {new Date(activity.timestamp).toLocaleDateString()}
                                       </td>
+                                      <td className="px-4 py-2">
+                                          {new Date(activity.timestamp).toLocaleTimeString()}
+                                      </td>
+                                      {/* <td className="px-4 py-2">
+                                          {new Date(activity.timestamp).toLocaleString()}
+                                      </td> */}
                                       <td className="px-4 py-2">
                                           {activity?.metadata?.visitType || "N/A"}
                                       </td>
