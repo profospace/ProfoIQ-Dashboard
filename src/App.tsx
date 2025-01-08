@@ -201,19 +201,29 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 
 // PrivateRoute Component
-function PrivateRoute({ children }) {
-  const navigate = useNavigate();
+// function PrivateRoute({ children }) {
+//   const navigate = useNavigate();
 
-  useEffect(() => {
-    const builderId = localStorage.getItem('builder-id');
-    console.log('Checking builderId');
-    console.log('Checking builderId:', builderId);
-    if (!builderId) {
-      navigate('/auth/signin');
-    }
-  }, [navigate]);
+//   useEffect(() => {
+//     const builderId = localStorage.getItem('builder-id');
+//     console.log('Checking builderId');
+//     console.log('Checking builderId:', builderId);
+//     if (!builderId) {
+//       navigate('/auth/signin');
+//     }
+//   }, [navigate]);
 
-  return <>{children}</>;
+//   return <>{children}</>;
+// }
+
+function PrivateRoute({children}){
+  const getUserFromLocalStorage = JSON.parse(localStorage.getItem('builder-id'))
+  // console.log(getUserFromLocalStorage?.result?.token)
+
+  return (
+    getUserFromLocalStorage !== undefined ? children : <Navigate to="/auth/signin" replace={true} />
+  )
+
 }
 
 function App() {
