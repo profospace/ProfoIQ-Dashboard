@@ -38,8 +38,8 @@ const ECommerce = () => {
     const payload = JSON.parse(localStorage.getItem('builder-id'))
     console.log(payload)
     try {
-      const response = await axios.get(`http://localhost:5053/api/builders/${payload?.id}/properties`);
-      // const response = await axios.get(`http://localhost:5053/api/builders/6763ca5d2c71a5e27c41f783/properties`);
+      const response = await axios.get(`https://propertify.onrender.com/api/builders/${payload?.id}/properties`);
+      // const response = await axios.get(`https://propertify.onrender.com/api/builders/6763ca5d2c71a5e27c41f783/properties`);
 
       console.log(response)
       if (response.data.success) {
@@ -52,7 +52,7 @@ const ECommerce = () => {
 
   const fetchInteraction = async (property) => {
     try {
-      const response = await axios.get(`http://localhost:5053/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`);
+      const response = await axios.get(`https://propertify.onrender.com/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`);
       const interactionData = response?.data?.data;
       setSinglePropertyStats(interactionData);
       filterActivitiesByDate(property?.post_id, selectedDate, interactionData);
@@ -188,7 +188,7 @@ const ECommerce = () => {
   //       const responses = await Promise.all(
   //         properties.map(async (property) => {
   //           const response = await axios.get(
-  //             `http://localhost:5053/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
+  //             `https://propertify.onrender.com/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
   //           );
   //           return response.data.data; // This will hold the data for each property
   //         })
@@ -209,7 +209,7 @@ const ECommerce = () => {
         const responses = await Promise.all(
           properties.map(async (property) => {
             const response = await axios.get(
-              `http://localhost:5053/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
+              `https://propertify.onrender.com/properties-interaction/api/interactions/stats?propertyId=${property?.post_id}`
             );
             return response.data.data;
           })
