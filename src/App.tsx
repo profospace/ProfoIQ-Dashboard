@@ -216,15 +216,19 @@ import DefaultLayout from './layout/DefaultLayout';
 //   return <>{children}</>;
 // }
 
-function PrivateRoute({children}){
-  const getUserFromLocalStorage = localStorage.getItem('builder-id') && JSON.parse(localStorage.getItem('builder-id'))
-  console.log(getUserFromLocalStorage)
+function PrivateRoute({ children }) {
+  const storedUser = localStorage.getItem('builder-id');
+  const getUserFromLocalStorage = storedUser ? JSON.parse(storedUser) : null;
+
+  console.log(getUserFromLocalStorage);
 
   return (
-    getUserFromLocalStorage !== undefined ? children : <Navigate to="/auth/signin" replace={true} />
-  )
-
+    getUserFromLocalStorage !== null
+      ? children
+      : <Navigate to="/auth/signin" replace={true} />
+  );
 }
+
 
 function App() {
   const [loading, setLoading] = useState(true);
