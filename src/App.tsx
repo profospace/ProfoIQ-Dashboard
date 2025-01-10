@@ -217,8 +217,8 @@ import DefaultLayout from './layout/DefaultLayout';
 // }
 
 function PrivateRoute({children}){
-  const getUserFromLocalStorage = JSON.parse(localStorage.getItem('builder-id'))
-  // console.log(getUserFromLocalStorage?.result?.token)
+  const getUserFromLocalStorage = localStorage.getItem('builder-id') && JSON.parse(localStorage.getItem('builder-id'))
+  console.log(getUserFromLocalStorage)
 
   return (
     getUserFromLocalStorage !== undefined ? children : <Navigate to="/auth/signin" replace={true} />
