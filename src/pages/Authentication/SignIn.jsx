@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 import LogoDark from '../../images/logo/logo-dark.svg';
 import Logo from '../../images/logo/logo.svg';
+import { base_url } from '../../../utils/base_url';
 
 const SignIn = () => {
   const [username, setUsername] = useState('anuragbuilders3462');
@@ -17,7 +18,7 @@ const SignIn = () => {
 
     try {
       // Send a POST request with the username and password in the body
-      const response = await axios.post('http://localhost:5053/builder/login', {
+      const response = await axios.post(`${base_url}/builder/login`, {
         username,
         password
       });

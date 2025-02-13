@@ -23,17 +23,33 @@ const CalendarLight = ({ selectedDate, onDateChange, highlightedDates }) => {
     };
 
 
+    // return (
+    //     <div className="mt-8 rounded-lg max-w-xl">
+    //         <h3 className="text-xl font-semibold text-gray-700 mb-6 text-start">Select a Date</h3>
+    //         <Calendar
+    //             onChange={onDateChange}
+    //             value={selectedDate}
+    //             tileClassName={({ date }) =>
+    //                 isDateHighlighted(date) ? 'highlight' : ''
+    //             }
+    //             className="react-calendar border-none shadow-md rounded-lg"
+    //             // tileDisabled={({ date }) => date.getDay() === 0 || date.getDay() === 6} // Disable weekends (optional)
+    //         />
+    //     </div>
+    // );
+
     return (
-        <div className="mt-8 rounded-lg max-w-xl">
-            <h3 className="text-xl font-semibold text-gray-700 mb-6 text-start">Select a Date</h3>
+        <div className="w-full">
+            <h3 className="mb-4 text-lg font-semibold text-gray-700 dark:text-gray-200 sm:mb-6 sm:text-xl">
+                Select a Date
+            </h3>
             <Calendar
                 onChange={onDateChange}
                 value={selectedDate}
                 tileClassName={({ date }) =>
                     isDateHighlighted(date) ? 'highlight' : ''
                 }
-                className="react-calendar border-none shadow-md rounded-lg"
-                // tileDisabled={({ date }) => date.getDay() === 0 || date.getDay() === 6} // Disable weekends (optional)
+                className="!w-full rounded-lg border-none shadow-sm dark:bg-boxdark"
             />
         </div>
     );

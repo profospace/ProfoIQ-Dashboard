@@ -281,10 +281,12 @@ function App() {
       <Route
         path="/profile"
         element={
-          <>
+          <PrivateRoute>
+            <DefaultLayout>
             <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
             <Profile />
-          </>
+            </DefaultLayout>
+          </PrivateRoute>
         }
       />
       <Route
