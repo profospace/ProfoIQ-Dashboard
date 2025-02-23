@@ -222,8 +222,8 @@ const BarChart = ({ properties, handleBarClick }) => {
                                             ? label.slice(0, 10) + (label.length > 10 ? '...' : '')
                                             : label;
                                     },
-                                    maxRotation: 45,
-                                    minRotation: 45
+                                    // maxRotation: 45,
+                                    // minRotation: 45
                                 },
                                 grid: {
                                     display: false,

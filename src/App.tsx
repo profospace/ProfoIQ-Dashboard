@@ -272,7 +272,7 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-              <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Calendar" />
               <Calendar />
             </DefaultLayout>
           </PrivateRoute>
@@ -283,7 +283,7 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-            <PageTitle title="Profile | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Profile" />
             <Profile />
             </DefaultLayout>
           </PrivateRoute>
@@ -293,7 +293,7 @@ function App() {
         path="/forms/form-elements"
         element={
           <>
-            <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Form Elements" />
             <FormElements />
           </>
         }
@@ -302,7 +302,7 @@ function App() {
         path="/forms/form-layout"
         element={
           <>
-            <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Form Layout" />
             <FormLayout />
           </>
         }
@@ -311,7 +311,7 @@ function App() {
         path="/tables"
         element={
           <>
-            <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Tables" />
             <Tables />
           </>
         }
@@ -320,7 +320,7 @@ function App() {
         path="/settings"
         element={
           <>
-            <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Settings" />
             <Settings />
           </>
         }
@@ -330,7 +330,7 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-              <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Basic Chart" />
               <Chart />
             </DefaultLayout>
           </PrivateRoute>
@@ -340,7 +340,7 @@ function App() {
         path="/ui/alerts"
         element={
           <>
-            <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Alerts" />
             <Alerts />
           </>
         }
@@ -349,7 +349,7 @@ function App() {
         path="/ui/buttons"
         element={
           <>
-            <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Buttons" />
             <Buttons />
           </>
         }

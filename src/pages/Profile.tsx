@@ -8,6 +8,15 @@ const Profile = () => {
   const getUserFromLocalStorage = storedUser ? JSON.parse(storedUser) : null;
 
   console.log(getUserFromLocalStorage);
+
+  const getInitials = (name) => {
+    if (!name) return '';
+    const words = name.trim().split(' ');
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
   return (
     <>
       <Breadcrumb pageName="Profile" />
@@ -54,8 +63,21 @@ const Profile = () => {
         </div>
         <div className="px-4 pb-6 text-center lg:pb-8 xl:pb-11.5">
           <div className="relative z-30 mx-auto -mt-22 h-30 w-full max-w-30 rounded-full bg-white/20 p-1 backdrop-blur sm:h-44 sm:max-w-44 sm:p-3">
-            <div className="relative drop-shadow-2">
-              <img src={getUserFromLocalStorage?.logo} alt="profile" className='rounded-full'/>
+            {/* <div className="relative drop-shadow-2">
+              <img src={getUserFromLocalStorage?.logo} alt="profile" className='rounded-full'/> */}
+            {getUserFromLocalStorage?.logo ? (
+              <img
+                src={getUserFromLocalStorage.logo}
+                alt="profile"
+                className="rounded-full w-full h-full object-cover"
+              />
+            ) : (
+              <div className="rounded-full w-full h-full flex items-center justify-center bg-white/10 backdrop-blur">
+                <span className="text-4xl font-semibold text-white">
+                  {getInitials(getUserFromLocalStorage?.name)}
+                </span>
+              </div>
+            )}
               {/* <label
                 htmlFor="profile"
                 className="absolute bottom-0 right-0 flex h-8.5 w-8.5 cursor-pointer items-center justify-center rounded-full bg-primary text-white hover:bg-opacity-90 sm:bottom-2 sm:right-2"
@@ -88,7 +110,7 @@ const Profile = () => {
                   className="sr-only"
                 />
               </label> */}
-            </div>
+            {/* </div> */}
           </div>
           <div className="mt-4">
             <h3 className="mb-1.5 text-2xl font-semibold text-black dark:text-white">

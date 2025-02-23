@@ -38,7 +38,7 @@ const ECommerce = () => {
   const fetchProperties = async () => {
     // getting builder id from localstorage
     const payload = JSON.parse(localStorage.getItem('builder-id'))
-    console.log(payload)
+    // console.log(payload)
     try {
       const response = await axios.get(`https://propertify.onrender.com/api/builders/${payload?.id}/properties`);
       // const response = await axios.get(`https://propertify.onrender.com/api/builders/6763ca5d2c71a5e27c41f783/properties`);
@@ -337,7 +337,8 @@ const ECommerce = () => {
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:gap-7.5">
-        <CardDataStats title="Total Visitors" total={totalViews ? totalViews : "____"} rate="0.43%" levelUp>
+        {/* levelUp */}
+        <CardDataStats title="Total Visitors" total={totalViews ? totalViews : "____"} rate="" >
           <svg
             className="fill-primary dark:fill-white"
             width="22"

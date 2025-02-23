@@ -3,6 +3,39 @@ import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
 import UserOne from '../../images/user/user-01.png';
 
+const InitialsAvatar = ({ name, className }) => {
+  const getInitials = (name) => {
+    if (!name) return '';
+    const words = name.trim().split(' ');
+    if (words.length >= 2) {
+      return (words[0][0] + words[1][0]).toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
+
+  // Generate a consistent color based on name
+  const getHSLColor = (str) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const h = hash % 360;
+    return `hsl(${h}, 70%, 50%)`;
+  };
+
+  const initials = getInitials(name);
+  const backgroundColor = getHSLColor(name || 'default');
+
+  return (
+    <div
+      className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold text-lg ${className}`}
+      style={{ backgroundColor }}
+    >
+      {initials}
+    </div>
+  );
+};
+
 const DropdownUser = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [name , setName] = useState('')
@@ -40,9 +73,12 @@ const DropdownUser = () => {
           <span className="block text-xs">{username && username}</span>
         </span>
 
-        <span className="h-12 w-12 rounded-full">
-          {/* <img src={UserOne} alt="User" /> */}
-          <img src={logo && logo} alt="User" />
+        <span className="h-12 w-12 rounded-full overflow-hidden">
+          {logo ? (
+            <img src={logo} alt={name} className="w-full h-full object-cover" />
+          ) : (
+            <InitialsAvatar name={name} />
+          )}
         </span>
 
         <svg
