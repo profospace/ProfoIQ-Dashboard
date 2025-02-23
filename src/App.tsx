@@ -261,7 +261,7 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-              <PageTitle title="eCommerce Dashboard | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="PROFO IQ Dashboard" />
               <ECommerce />
             </DefaultLayout>
           </PrivateRoute>
