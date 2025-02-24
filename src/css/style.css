@@ -216,11 +216,27 @@ span.flatpickr-weekday,
 
 /* Highlight style for specific elements */
 .highlight {
-  background-color: #C8EDF0;
+  background-color: #005157;
   /* background-color: #4fb847b9; */
   /* Customize the highlight color */
   /* border-radius: 50%; */
   /* padding: 5px; */
   text-align: center;
   color: white;
+}
+
+/* Highlight the current date */
+.react-calendar__tile--now {
+  background: #106bff !important;
+  /* Blue background */
+  color: white !important;
+  /* White text */
+  /* border-radius: 6px; */
+}
+
+/* Ensure the hover effect is visible */
+.react-calendar__tile:hover {
+  background: #2563eb !important;
+  /* Darker blue */
+  color: white !important;
 }

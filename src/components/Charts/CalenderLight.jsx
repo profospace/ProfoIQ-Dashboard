@@ -5,11 +5,6 @@ import 'react-calendar/dist/Calendar.css'; // Import the default styles for reac
 const CalendarLight = ({ selectedDate, onDateChange, highlightedDates }) => {
     console.log("highlightedDates", highlightedDates)
 
-    // const isDateHighlighted = (date) => {
-    //     const formattedDate = date.toISOString().split('T')[0];
-    //     return highlightedDates.includes(formattedDate);
-    // };
-
     const formatDateToYYYYMMDD = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
@@ -22,21 +17,6 @@ const CalendarLight = ({ selectedDate, onDateChange, highlightedDates }) => {
         return highlightedDates.includes(formattedDate);
     };
 
-
-    // return (
-    //     <div className="mt-8 rounded-lg max-w-xl">
-    //         <h3 className="text-xl font-semibold text-gray-700 mb-6 text-start">Select a Date</h3>
-    //         <Calendar
-    //             onChange={onDateChange}
-    //             value={selectedDate}
-    //             tileClassName={({ date }) =>
-    //                 isDateHighlighted(date) ? 'highlight' : ''
-    //             }
-    //             className="react-calendar border-none shadow-md rounded-lg"
-    //             // tileDisabled={({ date }) => date.getDay() === 0 || date.getDay() === 6} // Disable weekends (optional)
-    //         />
-    //     </div>
-    // );
 
     return (
         <div className="w-full">
