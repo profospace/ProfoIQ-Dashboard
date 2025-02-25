@@ -252,7 +252,7 @@ function App() {
         path="/auth/signin"
         element={
           <>
-            <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+            <PageTitle title="Signin | PROFOIQ - Dashboard" />
             <SignIn />
           </>
         }
