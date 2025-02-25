@@ -2058,6 +2058,8 @@ function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
     const [colorMode] = useColorMode();
     const isDark = colorMode === 'dark';
 
+    console.log(singlePropertyStats, selectedDate)
+
     useEffect(() => {
         if (selectedDate) {
             setView('selectedDate');
@@ -2284,7 +2286,7 @@ function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
     ];
 
     return (
-        <div className="space-y-4">
+        <div className="">
             <div className="flex items-center justify-between">
                 <div className="flex flex-wrap gap-2 sm:flex-nowrap">
                     {['selectedDate', '3days', 'week', 'month', 'quarter'].map((tab) => (
@@ -2316,7 +2318,7 @@ function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
             </div>
 
             <div
-                className="min-h-[300px] w-full rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:min-h-[400px]"
+                className="min-h-[300px] w-full mt-4 sm:min-h-[400px]"
                 ref={lineChartRef}
             >
                 <Line data={lineChartData} options={lineChartOptions} />
@@ -2326,3 +2328,316 @@ function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
 }
 
 export default SummaryTrend;
+
+// import React, { useState, useEffect } from 'react';
+// import { Line } from 'react-chartjs-2';
+// import {
+//     Chart as ChartJS,
+//     CategoryScale,
+//     LinearScale,
+//     LineElement,
+//     PointElement,
+//     Title,
+//     Tooltip,
+//     Legend,
+//     Filler
+// } from 'chart.js';
+// import useColorMode from '../../hooks/useColorMode';
+
+// ChartJS.register(
+//     CategoryScale,
+//     LinearScale,
+//     LineElement,
+//     PointElement,
+//     Title,
+//     Tooltip,
+//     Legend,
+//     Filler
+// );
+
+// function SummaryTrend({ singlePropertyStats, selectedDate, lineChartRef }) {
+//     const [view, setView] = useState(selectedDate ? 'selectedDate' : 'week');
+//     const [colorMode] = useColorMode();
+//     const isDark = colorMode === 'dark';
+
+//     console.log(singlePropertyStats, selectedDate)
+
+//     useEffect(() => {
+//         if (selectedDate) {
+//             setView('selectedDate');
+//         }
+//     }, [selectedDate]);
+
+//     const processData = (view) => {
+//         const sortedStats = singlePropertyStats.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+//         if (view === 'selectedDate') {
+//             const selectedDateData = sortedStats.find(
+//                 (stat) => new Date(stat.date).toDateString() === new Date(selectedDate).toDateString()
+//             );
+
+//             if (!selectedDateData || !selectedDateData.details) {
+//                 return {
+//                     labels: [],
+//                     datasets: []
+//                 };
+//             }
+
+//             // Sort details by timestamp
+//             const sortedDetails = selectedDateData.details.sort(
+//                 (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
+//             );
+
+//             // Create data points for each timestamp
+//             const timeSeriesData = sortedDetails.reduce((acc, detail) => {
+//                 const timestamp = new Date(detail.timestamp);
+//                 const timeStr = timestamp.toLocaleTimeString([], {
+//                     hour: '2-digit',
+//                     minute: '2-digit'
+//                 });
+
+//                 if (!acc[timeStr]) {
+//                     acc[timeStr] = { visits: 0, contacts: 0, saves: 0 };
+//                 }
+
+//                 if (detail.type === 'VISIT') acc[timeStr].visits += 1;
+//                 if (detail.type === 'CONTACT') acc[timeStr].contacts += 1;
+//                 if (detail.type === 'SAVE') acc[timeStr].saves += 1;
+
+//                 return acc;
+//             }, {});
+
+//             const timestamps = Object.keys(timeSeriesData);
+
+//             return {
+//                 labels: timestamps,
+//                 datasets: [
+//                     {
+//                         label: 'Visits',
+//                         data: timestamps.map(t => timeSeriesData[t].visits),
+//                         borderColor: 'rgb(53, 162, 235)',
+//                         backgroundColor: isDark ? 'rgba(53, 162, 235, 0.2)' : 'rgba(53, 162, 235, 0.1)',
+//                         fill: true,
+//                         tension: 0,
+//                     },
+//                     {
+//                         label: 'Contacts',
+//                         data: timestamps.map(t => timeSeriesData[t].contacts),
+//                         borderColor: 'rgb(75, 192, 192)',
+//                         backgroundColor: isDark ? 'rgba(75, 192, 192, 0.2)' : 'rgba(75, 192, 192, 0.1)',
+//                         fill: true,
+//                         tension: 0,
+//                     },
+//                     {
+//                         label: 'Saves',
+//                         data: timestamps.map(t => timeSeriesData[t].saves),
+//                         borderColor: 'rgb(255, 99, 132)',
+//                         backgroundColor: isDark ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
+//                         fill: true,
+//                         tension: 0,
+//                     },
+//                 ],
+//             };
+//         }
+
+//         return {
+//             labels: sortedStats.map((stat) => stat.date),
+//             datasets: [
+//                 {
+//                     label: 'Visits',
+//                     data: sortedStats.map((stat) => stat.stats.visits || 0),
+//                     borderColor: 'rgb(53, 162, 235)',
+//                     backgroundColor: isDark ? 'rgba(53, 162, 235, 0.2)' : 'rgba(53, 162, 235, 0.1)',
+//                     fill: true,
+//                     tension: 0,
+//                 },
+//                 {
+//                     label: 'Contacts',
+//                     data: sortedStats.map((stat) => stat.stats.contacts || 0),
+//                     borderColor: 'rgb(75, 192, 192)',
+//                     backgroundColor: isDark ? 'rgba(75, 192, 192, 0.2)' : 'rgba(75, 192, 192, 0.1)',
+//                     fill: true,
+//                     tension: 0,
+//                 },
+//                 {
+//                     label: 'Saves',
+//                     data: sortedStats.map((stat) => stat.stats.saves || 0),
+//                     borderColor: 'rgb(255, 99, 132)',
+//                     backgroundColor: isDark ? 'rgba(255, 99, 132, 0.2)' : 'rgba(255, 99, 132, 0.1)',
+//                     fill: true,
+//                     tension: 0,
+//                 },
+//             ],
+//         };
+//     };
+
+//     const lineChartData = processData(view);
+
+//     const lineChartOptions = {
+//         responsive: true,
+//         interaction: {
+//             mode: 'index',
+//             intersect: false,
+//         },
+//         plugins: {
+//             legend: {
+//                 display: false
+//             },
+//             tooltip: {
+//                 enabled: true,
+//                 position: 'nearest',
+//                 backgroundColor: isDark ? '#374151' : 'white',
+//                 titleColor: isDark ? '#D1D5DB' : '#666',
+//                 bodyColor: isDark ? '#D1D5DB' : '#666',
+//                 titleFont: {
+//                     size: 14,
+//                     weight: 'normal'
+//                 },
+//                 bodyFont: {
+//                     size: 14
+//                 },
+//                 padding: 12,
+//                 borderColor: isDark ? '#4B5563' : '#ddd',
+//                 borderWidth: 1,
+//                 displayColors: true,
+//                 boxPadding: 6,
+//                 callbacks: {
+//                     title: function (tooltipItems) {
+//                         return tooltipItems[0].label;
+//                     },
+//                     label: function (context) {
+//                         const label = context.dataset.label;
+//                         const value = context.parsed.y;
+//                         return [` ${label}: ${value}`];
+//                     },
+//                     labelTextColor: function () {
+//                         return isDark ? '#D1D5DB' : '#666';
+//                     },
+//                 }
+//             },
+//             highlightYAxis: {
+//                 beforeDraw: (chart) => {
+//                     if (chart.tooltip?.active) {
+//                         const ctx = chart.ctx;
+//                         const yAxis = chart.scales.y;
+//                         const activeTooltip = chart.tooltip;
+
+//                         ctx.save();
+//                         ctx.beginPath();
+//                         ctx.moveTo(activeTooltip.caretX, yAxis.top);
+//                         ctx.lineTo(activeTooltip.caretX, yAxis.bottom);
+//                         ctx.lineWidth = 1;
+//                         ctx.strokeStyle = isDark ? 'rgba(209, 213, 219, 0.8)' : 'rgba(0, 0, 0, 0.8)';
+//                         ctx.stroke();
+//                         ctx.restore();
+//                     }
+//                 }
+//             }
+//         },
+//         scales: {
+//             y: {
+//                 beginAtZero: true,
+//                 grid: {
+//                     color: isDark ? 'rgba(209, 213, 219, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+//                     drawBorder: false,
+//                     drawTicks: false,
+//                 },
+//                 border: {
+//                     display: false,
+//                 },
+//                 ticks: {
+//                     padding: 10,
+//                     color: isDark ? '#D1D5DB' : '#666'
+//                 }
+//             },
+//             x: {
+//                 grid: {
+//                     color: isDark ? 'rgba(209, 213, 219, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+//                     drawBorder: false,
+//                     drawTicks: false,
+//                 },
+//                 border: {
+//                     display: false,
+//                 },
+//                 ticks: {
+//                     padding: 10,
+//                     color: isDark ? '#D1D5DB' : '#666',
+//                     maxRotation: 45,
+//                     minRotation: 45
+//                 }
+//             }
+//         },
+//         elements: {
+//             point: {
+//                 radius: 2,
+//                 hoverRadius: 6,
+//                 borderWidth: 2,
+//                 backgroundColor: isDark ? '#1F2937' : 'rgb(255, 255, 255)',
+//                 hoverBackgroundColor: isDark ? '#1F2937' : 'white',
+//                 borderColor: function (context) {
+//                     return context.dataset.borderColor;
+//                 },
+//                 hoverBorderWidth: 3,
+//             },
+//             line: {
+//                 borderWidth: 1
+//             }
+//         },
+//         hover: {
+//             mode: 'index',
+//             intersect: false,
+//         },
+//         onHover: (event, elements) => {
+//             event.native.target.style.cursor = 'crosshair';
+//         }
+//     };
+
+//     const legendItems = [
+//         { label: 'Visits', color: 'rgb(53, 162, 235)' },
+//         { label: 'Contacts', color: 'rgb(75, 192, 192)' },
+//         { label: 'Saves', color: 'rgb(255, 99, 132)' }
+//     ];
+
+//     return (
+//         <div className="space-y-4">
+//             <div className="flex items-center justify-between">
+//                 <div className="flex flex-wrap gap-2 sm:flex-nowrap">
+//                     {['selectedDate', '3days', 'week', 'month', 'quarter'].map((tab) => (
+//                         <button
+//                             key={tab}
+//                             className={`rounded px-3 py-2 text-sm transition-colors duration-200 sm:px-4 
+//                             ${view === tab
+//                                     ? 'bg-primary text-white dark:bg-blue-600'
+//                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300'
+//                                 }`}
+//                             onClick={() => setView(tab)}
+//                         >
+//                             {tab.charAt(0).toUpperCase() + tab.slice(1)}
+//                         </button>
+//                     ))}
+//                 </div>
+
+//                 <div className="flex items-center gap-6">
+//                     {legendItems.map((item, index) => (
+//                         <div key={index} className="flex items-center gap-2">
+//                             <div
+//                                 className="h-3 w-3 rounded-full"
+//                                 style={{ backgroundColor: item.color }}
+//                             />
+//                             <span className="text-sm text-gray-600 dark:text-gray-300">{item.label}</span>
+//                         </div>
+//                     ))}
+//                 </div>
+//             </div>
+
+//             <div
+//                 className="min-h-[300px] w-full rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:min-h-[400px]"
+//                 ref={lineChartRef}
+//             >
+//                 <Line data={lineChartData} options={lineChartOptions} />
+//             </div>
+//         </div>
+//     );
+// }
+
+// export default SummaryTrend;

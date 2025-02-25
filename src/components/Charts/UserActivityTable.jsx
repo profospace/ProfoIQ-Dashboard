@@ -389,6 +389,7 @@ import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 
 const UserActivityTable = ({ filteredActivities, lineChartRef, selectedPropertyId, properties }) => {
+    // console.log("filteredActivities", filteredActivities)
     const [showUserDetails, setShowUserDetails] = useState(true);
 
     const toggleUserDetails = () => {
