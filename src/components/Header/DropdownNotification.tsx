@@ -1,10 +1,57 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
+import { base_url } from '../../../utils/base_url';
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  const [callbacks, setCallbacks] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [builderId, setBuilderId] = useState('67bb17484e27e62569bcfd17')
+
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (dropdownOpen) {
+      fetchCallbacks();
+    }
+  }, [dropdownOpen, builderId]);
+
+  const fetchCallbacks = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `${base_url}/api/callback//builder/${builderId}?status=PENDING&limit=4`
+      );
+      const result = await response.json();
+
+      if (result.success) {
+        setCallbacks(result.data);
+        if (result.data.length > 0) {
+          setNotifying(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching callbacks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    const options = {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
+
+  const handleNavigation = () => {
+    navigate('/callback')
+    setDropdownOpen(false)
+  }
 
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
@@ -18,9 +65,8 @@ const DropdownNotification = () => {
           className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
         >
           <span
-            className={`absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1 ${
-              notifying === false ? 'hidden' : 'inline'
-            }`}
+            className={`absolute -top-0.5 right-0 z-1 h-2 w-2 rounded-full bg-meta-1 ${notifying === false ? 'hidden' : 'inline'
+              }`}
           >
             <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
           </span>
@@ -46,74 +92,79 @@ const DropdownNotification = () => {
           >
             <div className="px-4.5 py-3">
               <h5 className="text-sm font-medium text-bodydark2">
-                Notification
+                Callback Requests
               </h5>
             </div>
 
             <ul className="flex h-auto flex-col overflow-y-auto">
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      Edit your information in a swipe
-                    </span>{' '}
-                    Sint occaecat cupidatat non proident, sunt in culpa qui
-                    officia deserunt mollit anim.
-                  </p>
+              {loading ? (
+                <li className="flex justify-center items-center py-6">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </li>
+              ) : callbacks.length === 0 ? (
+                <li className="px-4.5 py-3 text-center text-sm text-bodydark2">
+                  No pending callback requests
+                </li>
+              ) : (
+                callbacks.map((callback) => (
+                  <li key={callback._id}>
+                    <div
+                      className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
 
-                  <p className="text-xs">12 May, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      It is a long established fact
-                    </span>{' '}
-                    that a reader will be distracted by the readable.
-                  </p>
+                    >
+                      <div>
+                        <p className="text-sm">
+                          {/* <span className="text-black dark:text-white">
+                          Callback Request {callback._id.substring(0, 8)}...
+                        </span>{' '} */}
+                          Phone: {callback.phoneNumber}
+                        </p>
+                        <p className="text-sm">
+                          {/* <span className="text-black dark:text-white">
+                          Callback Request {callback._id.substring(0, 8)}...
+                        </span>{' '} */}
+                          Requested Time: {callback.requestedTime}
+                        </p>
 
-                  <p className="text-xs">24 Feb, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{' '}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
+                      </div>
 
-                  <p className="text-xs">04 Jan, 2025</p>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="#"
-                >
-                  <p className="text-sm">
-                    <span className="text-black dark:text-white">
-                      There are many variations
-                    </span>{' '}
-                    of passages of Lorem Ipsum available, but the majority have
-                    suffered
-                  </p>
+                      <div className="flex justify-between items-center">
+                        <p className="text-xs">{formatDate(callback.createdAt)}</p>
+                        <span className="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                          {callback.status}
+                        </span>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              )}
 
-                  <p className="text-xs">01 Dec, 2024</p>
-                </Link>
-              </li>
+              {callbacks.length > 0 && (
+                <li className="border-t border-stroke dark:border-strokedark">
+                  <button
+                    className="flex justify-center items-center gap-2 px-4.5 py-2 text-sm font-medium text-primary hover:bg-gray-2 dark:hover:bg-meta-4"
+                    onClick={() => handleNavigation()}
+                  >
+                    View All Callbacks
+                    <svg
+                      width="14"
+                      height="8"
+                      viewBox="0 0 14 8"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M13.25 4C13.25 3.59 12.91 3.25 12.5 3.25L2.5 3.25C2.09 3.25 1.75 3.59 1.75 4C1.75 4.41 2.09 4.75 2.5 4.75L12.5 4.75C12.91 4.75 13.25 4.41 13.25 4Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M8.56 7.06C8.84 7.34 9.28 7.34 9.56 7.06L12.78 3.84C13.06 3.56 13.06 3.12 12.78 2.84C12.5 2.56 12.06 2.56 11.78 2.84L9.06 5.56L6.34 2.84C6.06 2.56 5.62 2.56 5.34 2.84C5.06 3.12 5.06 3.56 5.34 3.84L8.56 7.06Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
         )}

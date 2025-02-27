@@ -181,6 +181,189 @@
 // export default App;
 
 
+// import { useEffect, useState } from 'react';
+// import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+
+// import Loader from './common/Loader';
+// import PageTitle from './components/PageTitle';
+// import SignIn from './pages/Authentication/SignIn';
+// import SignUp from './pages/Authentication/SignUp';
+// import Calendar from './pages/Calendar';
+// import Chart from './pages/Chart';
+// import ECommerce from './pages/Dashboard/ECommerce';
+// import FormElements from './pages/Form/FormElements';
+// import FormLayout from './pages/Form/FormLayout';
+// import Profile from './pages/Profile';
+// import Settings from './pages/Settings';
+// import Tables from './pages/Tables';
+// import Alerts from './pages/UiElements/Alerts';
+// import Buttons from './pages/UiElements/Buttons';
+// import DefaultLayout from './layout/DefaultLayout';
+
+// // PrivateRoute Component
+// // function PrivateRoute({ children }) {
+// //   const navigate = useNavigate();
+
+// //   useEffect(() => {
+// //     const builderId = localStorage.getItem('builder-id');
+// //     console.log('Checking builderId');
+// //     console.log('Checking builderId:', builderId);
+// //     if (!builderId) {
+// //       navigate('/auth/signin');
+// //     }
+// //   }, [navigate]);
+
+// //   return <>{children}</>;
+// // }
+
+// function PrivateRoute({ children }) {
+//   const storedUser = localStorage.getItem('builder-id');
+//   const getUserFromLocalStorage = storedUser ? JSON.parse(storedUser) : null;
+
+//   console.log(getUserFromLocalStorage);
+
+//   return (
+//     getUserFromLocalStorage !== null
+//       ? children
+//       : <Navigate to="/auth/signin" replace={true} />
+//   );
+// }
+
+
+// function App() {
+//   const [loading, setLoading] = useState(true);
+//   const { pathname } = useLocation();
+
+//   useEffect(() => {
+//     window.scrollTo(0, 0);
+//   }, [pathname]);
+
+//   useEffect(() => {
+//     setTimeout(() => setLoading(false), 1000);
+//   }, []);
+
+  
+
+//   return loading ? (
+//     <Loader />
+//   ) : (
+//     <Routes>
+//       <Route
+//         path="/auth/signin"
+//         element={
+//           <>
+//             <PageTitle title="Signin | PROFOIQ - Dashboard" />
+//             <SignIn />
+//           </>
+//         }
+//       />
+//       {/* Protected Routes */}
+//       <Route
+//         index
+//         element={
+//           <PrivateRoute>
+//             <DefaultLayout>
+//               <PageTitle title="PROFO IQ Dashboard" />
+//               <ECommerce />
+//             </DefaultLayout>
+//           </PrivateRoute>
+//         }
+//       />
+//       <Route
+//         path="/calendar"
+//         element={
+//           <PrivateRoute>
+//             <DefaultLayout>
+//               <PageTitle title="Calendar" />
+//               <Calendar />
+//             </DefaultLayout>
+//           </PrivateRoute>
+//         }
+//       />
+//       <Route
+//         path="/profile"
+//         element={
+//           <PrivateRoute>
+//             <DefaultLayout>
+//             <PageTitle title="Profile" />
+//             <Profile />
+//             </DefaultLayout>
+//           </PrivateRoute>
+//         }
+//       />
+//       <Route
+//         path="/forms/form-elements"
+//         element={
+//           <>
+//             <PageTitle title="Form Elements" />
+//             <FormElements />
+//           </>
+//         }
+//       />
+//       <Route
+//         path="/forms/form-layout"
+//         element={
+//           <>
+//             <PageTitle title="Form Layout" />
+//             <FormLayout />
+//           </>
+//         }
+//       />
+//       <Route
+//         path="/tables"
+//         element={
+//           <>
+//             <PageTitle title="Tables" />
+//             <Tables />
+//           </>
+//         }
+//       />
+//       <Route
+//         path="/settings"
+//         element={
+//           <>
+//             <PageTitle title="Settings" />
+//             <Settings />
+//           </>
+//         }
+//       />
+//       <Route
+//         path="/chart"
+//         element={
+//           <PrivateRoute>
+//             <DefaultLayout>
+//               <PageTitle title="Basic Chart" />
+//               <Chart />
+//             </DefaultLayout>
+//           </PrivateRoute>
+//         }
+//       />
+//       <Route
+//         path="/ui/alerts"
+//         element={
+//           <>
+//             <PageTitle title="Alerts" />
+//             <Alerts />
+//           </>
+//         }
+//       />
+//       <Route
+//         path="/ui/buttons"
+//         element={
+//           <>
+//             <PageTitle title="Buttons" />
+//             <Buttons />
+//           </>
+//         }
+//       />
+//     </Routes>
+//   );
+// }
+
+// export default App;
+
+
+
 import { useEffect, useState } from 'react';
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
@@ -194,6 +377,7 @@ import ECommerce from './pages/Dashboard/ECommerce';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
+import CallbackRequests from './pages/CallbackRequests';
 import Settings from './pages/Settings';
 import Tables from './pages/Tables';
 import Alerts from './pages/UiElements/Alerts';
@@ -221,6 +405,8 @@ function PrivateRoute({ children }) {
   const getUserFromLocalStorage = storedUser ? JSON.parse(storedUser) : null;
 
   console.log(getUserFromLocalStorage);
+  console.log(new Date("2025-02-14T12:48:25.769Z").toLocaleString())
+
 
   return (
     getUserFromLocalStorage !== null
@@ -242,7 +428,7 @@ function App() {
     setTimeout(() => setLoading(false), 1000);
   }, []);
 
-  
+
 
   return loading ? (
     <Loader />
@@ -285,8 +471,19 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-            <PageTitle title="Profile" />
-            <Profile />
+              <PageTitle title="Profile" />
+              <Profile />
+            </DefaultLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/callback"
+        element={
+          <PrivateRoute>
+            <DefaultLayout>
+              <PageTitle title="Callback Requests" />
+              <CallbackRequests />
             </DefaultLayout>
           </PrivateRoute>
         }
