@@ -382,167 +382,376 @@
 
 // export default UserActivityTable;
 
+// import React, { useState } from 'react';
+// import { jsPDF } from 'jspdf';
+// import 'jspdf-autotable';
+// import * as XLSX from 'xlsx';
+// import html2canvas from 'html2canvas';
+
+// const UserActivityTable = ({ filteredActivities, lineChartRef, selectedPropertyId, properties }) => {
+//     console.log("filteredActivities", filteredActivities)
+//     const [showUserDetails, setShowUserDetails] = useState(true);
+
+//     const toggleUserDetails = () => {
+//         setShowUserDetails((prevState) => !prevState);
+//     };
+
+//     // Export functions remain the same
+//     const exportToExcel = () => {
+//         const data = filteredActivities.map((activity) => ({
+//             Username: showUserDetails ? activity.userName : '✘',
+//             VisitType: activity?.metadata?.visitType || "N/A",
+//             Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
+//             Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
+//             Activity_Type: activity.type ? activity.type : 'N/A',
+//             PhoneNo: showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+//             Email: showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+//             Device_Info: activity?.metadata?.deviceInfo || "N/A",
+//         }));
+//         const ws = XLSX.utils.json_to_sheet(data);
+//         const wb = XLSX.utils.book_new();
+//         XLSX.utils.book_append_sheet(wb, ws, "Property Activity");
+//         XLSX.writeFile(wb, "property_activity.xlsx");
+//     };
+
+//     const exportToPDF = async () => {
+//         // PDF export logic remains the same
+//         const doc = new jsPDF();
+//         const selectedProperty = properties.find(property => property.post_id === selectedPropertyId);
+//         const propertyTitle = selectedProperty ? selectedProperty.post_title : "Unknown Property";
+//         const formattedDate = new Date().toLocaleDateString();
+
+//         doc.setFontSize(16);
+//         doc.text(`Property: ${propertyTitle}`, 10, 10);
+//         doc.text(`Date: ${formattedDate}`, 10, 20);
+
+//         const chartContainer = lineChartRef.current;
+//         if (!chartContainer) {
+//             console.error("Chart container not found.");
+//             return;
+//         }
+
+//         html2canvas(chartContainer).then((canvas) => {
+//             const chartImage = canvas.toDataURL('image/png');
+//             doc.addImage(chartImage, 'PNG', 10, 30, 180, 100);
+
+//             const data = filteredActivities.map((activity) => [
+//                 showUserDetails ? activity.userName : '✘',
+//                 activity.type ? activity.type : 'N/A',
+//                 activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : 'N/A',
+//                 activity?.metadata?.visitType || "N/A",
+//                 showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+//                 showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+//                 activity?.metadata?.deviceInfo || "N/A",
+//             ]);
+
+//             doc.autoTable({
+//                 startY: 140,
+//                 head: [['Username', 'Activity Type', 'Time', 'Visit Type', 'Contact No.', 'Email', 'Device Info']],
+//                 body: data,
+//             });
+
+//             doc.save('property_activity.pdf');
+//         }).catch((error) => {
+//             console.error("Error capturing the chart as an image:", error);
+//         });
+//     };
+
+//     return (
+//         <div className="mt-8 px-4 sm:px-0">
+//             {filteredActivities.length > 0 ? (
+//                 <>
+//                     {/* Responsive button grid */}
+//                     <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3 mb-6">
+//                         <button
+//                             onClick={toggleUserDetails}
+//                             className="w-full sm:w-auto px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-500 dark:hover:bg-blue-400 transition-all duration-300 text-sm sm:text-base"
+//                         >
+//                             {showUserDetails ? "Hide User Details" : "Show User Details"}
+//                         </button>
+//                         <button
+//                             onClick={exportToExcel}
+//                             className="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-500 dark:hover:bg-green-400 transition-all duration-300 text-sm sm:text-base"
+//                         >
+//                             Export to Excel
+//                         </button>
+//                         <button
+//                             onClick={exportToPDF}
+//                             className="w-full sm:w-auto px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-500 dark:hover:bg-red-400 transition-all duration-300 text-sm sm:text-base"
+//                         >
+//                             Export to PDF
+//                         </button>
+//                     </div>
+
+//                     {/* Mobile-optimized table container */}
+//                     <div className="w-full rounded-xl shadow-xl bg-white dark:bg-gray-800 transition-colors duration-300">
+//                         <div className="overflow-x-auto">
+//                             <div className="inline-block min-w-full align-middle">
+//                                 <div className="overflow-hidden">
+//                                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+//                                         <thead className="bg-gray-100 dark:bg-gray-700">
+//                                             <tr>
+//                                                 <th scope="col" className="sticky left-0 z-10 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
+//                                                     Username
+//                                                 </th>
+//                                                 {/* Other headers with responsive text size */}
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Activity Type</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Date</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Time</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Visit Type</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Contact No.</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Email</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Device Info</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Sub Locality</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Locality</th>
+//                                                 <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">City</th>
+//                                             </tr>
+//                                         </thead>
+//                                         <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+//                                             {filteredActivities.map((activity, index) => (
+//                                                 <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+//                                                     <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {showUserDetails ? activity.userName : "✘"}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.type}</td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {new Date(activity.timestamp).toLocaleDateString()}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {new Date(activity.timestamp).toLocaleTimeString()}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {activity?.metadata?.visitType || "N/A"}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘'}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘'}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {activity?.metadata?.deviceInfo || "N/A"}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {activity?.metadata?.subLocality || "N/A"}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {activity?.metadata?.locality || "N/A"}
+//                                                     </td>
+//                                                     <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+//                                                         {activity?.metadata?.city || "N/A"}
+//                                                     </td>
+//                                                 </tr>
+//                                             ))}
+//                                         </tbody>
+//                                     </table>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </>
+//             ) : (
+//                 <p className="text-gray-500 dark:text-gray-400 text-center">No data available for this day.</p>
+//             )}
+//         </div>
+//     );
+// };
+
+// export default UserActivityTable;
+
+
 import React, { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 
-const UserActivityTable = ({ filteredActivities, lineChartRef, selectedPropertyId, properties }) => {
-    console.log("filteredActivities", filteredActivities)
-    const [showUserDetails, setShowUserDetails] = useState(true);
+const UserActivityTable = ({ 
+  filteredActivities, 
+  lineChartRef, 
+  selectedEntityId, 
+  selectedEntityType, 
+  properties, 
+  projects 
+}) => {
+  const [showUserDetails, setShowUserDetails] = useState(true);
 
-    const toggleUserDetails = () => {
-        setShowUserDetails((prevState) => !prevState);
-    };
+  const toggleUserDetails = () => {
+    setShowUserDetails((prevState) => !prevState);
+  };
 
-    // Export functions remain the same
-    const exportToExcel = () => {
-        const data = filteredActivities.map((activity) => ({
-            Username: showUserDetails ? activity.userName : '✘',
-            VisitType: activity?.metadata?.visitType || "N/A",
-            Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
-            Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
-            Activity_Type: activity.type ? activity.type : 'N/A',
-            PhoneNo: showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
-            Email: showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
-            Device_Info: activity?.metadata?.deviceInfo || "N/A",
-        }));
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Property Activity");
-        XLSX.writeFile(wb, "property_activity.xlsx");
-    };
+  // Get selected entity title based on type
+  const getSelectedEntityTitle = () => {
+    if (selectedEntityType === 'PROPERTY') {
+      const property = properties.find(p => p.post_id === selectedEntityId);
+      return property ? property.post_title : "Unknown Property";
+    } else if (selectedEntityType === 'PROJECT') {
+      const project = projects.find(p => p.projectId === selectedEntityId);
+      return project ? project.name : "Unknown Project";
+    }
+    return "Unknown Entity";
+  };
 
-    const exportToPDF = async () => {
-        // PDF export logic remains the same
-        const doc = new jsPDF();
-        const selectedProperty = properties.find(property => property.post_id === selectedPropertyId);
-        const propertyTitle = selectedProperty ? selectedProperty.post_title : "Unknown Property";
-        const formattedDate = new Date().toLocaleDateString();
+  // Export functions
+  const exportToExcel = () => {
+    const data = filteredActivities.map((activity) => ({
+      Username: showUserDetails ? activity.userName : '✘',
+      EntityType: selectedEntityType,
+      VisitType: activity?.metadata?.visitType || "N/A",
+      Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
+      Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
+      Activity_Type: activity.type ? activity.type : 'N/A',
+      PhoneNo: showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+      Email: showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+      Device_Info: activity?.metadata?.deviceInfo || "N/A",
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `${selectedEntityType} Activity`);
+    XLSX.writeFile(wb, `${selectedEntityType.toLowerCase()}_activity.xlsx`);
+  };
 
-        doc.setFontSize(16);
-        doc.text(`Property: ${propertyTitle}`, 10, 10);
-        doc.text(`Date: ${formattedDate}`, 10, 20);
+  const exportToPDF = async () => {
+    const doc = new jsPDF();
+    const entityTitle = getSelectedEntityTitle();
+    const formattedDate = new Date().toLocaleDateString();
 
-        const chartContainer = lineChartRef.current;
-        if (!chartContainer) {
-            console.error("Chart container not found.");
-            return;
-        }
+    doc.setFontSize(16);
+    doc.text(`${selectedEntityType}: ${entityTitle}`, 10, 10);
+    doc.text(`Date: ${formattedDate}`, 10, 20);
 
-        html2canvas(chartContainer).then((canvas) => {
-            const chartImage = canvas.toDataURL('image/png');
-            doc.addImage(chartImage, 'PNG', 10, 30, 180, 100);
+    const chartContainer = lineChartRef.current;
+    if (!chartContainer) {
+      console.error("Chart container not found.");
+      return;
+    }
 
-            const data = filteredActivities.map((activity) => [
-                showUserDetails ? activity.userName : '✘',
-                activity.type ? activity.type : 'N/A',
-                activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : 'N/A',
-                activity?.metadata?.visitType || "N/A",
-                showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
-                showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
-                activity?.metadata?.deviceInfo || "N/A",
-            ]);
+    html2canvas(chartContainer).then((canvas) => {
+      const chartImage = canvas.toDataURL('image/png');
+      doc.addImage(chartImage, 'PNG', 10, 30, 180, 100);
 
-            doc.autoTable({
-                startY: 140,
-                head: [['Username', 'Activity Type', 'Time', 'Visit Type', 'Contact No.', 'Email', 'Device Info']],
-                body: data,
-            });
+      const data = filteredActivities.map((activity) => [
+        showUserDetails ? activity.userName : '✘',
+        activity.type ? activity.type : 'N/A',
+        activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : 'N/A',
+        activity?.metadata?.visitType || "N/A",
+        showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+        showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+        activity?.metadata?.deviceInfo || "N/A",
+      ]);
 
-            doc.save('property_activity.pdf');
-        }).catch((error) => {
-            console.error("Error capturing the chart as an image:", error);
-        });
-    };
+      doc.autoTable({
+        startY: 140,
+        head: [['Username', 'Activity Type', 'Time', 'Visit Type', 'Contact No.', 'Email', 'Device Info']],
+        body: data,
+      });
 
-    return (
-        <div className="mt-8 px-4 sm:px-0">
-            {filteredActivities.length > 0 ? (
-                <>
-                    {/* Responsive button grid */}
-                    <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3 mb-6">
-                        <button
-                            onClick={toggleUserDetails}
-                            className="w-full sm:w-auto px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-500 dark:hover:bg-blue-400 transition-all duration-300 text-sm sm:text-base"
-                        >
-                            {showUserDetails ? "Hide User Details" : "Show User Details"}
-                        </button>
-                        <button
-                            onClick={exportToExcel}
-                            className="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-500 dark:hover:bg-green-400 transition-all duration-300 text-sm sm:text-base"
-                        >
-                            Export to Excel
-                        </button>
-                        <button
-                            onClick={exportToPDF}
-                            className="w-full sm:w-auto px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-500 dark:hover:bg-red-400 transition-all duration-300 text-sm sm:text-base"
-                        >
-                            Export to PDF
-                        </button>
-                    </div>
+      doc.save(`${selectedEntityType.toLowerCase()}_activity.pdf`);
+    }).catch((error) => {
+      console.error("Error capturing the chart as an image:", error);
+    });
+  };
 
-                    {/* Mobile-optimized table container */}
-                    <div className="w-full rounded-xl shadow-xl bg-white dark:bg-gray-800 transition-colors duration-300">
-                        <div className="overflow-x-auto">
-                            <div className="inline-block min-w-full align-middle">
-                                <div className="overflow-hidden">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead className="bg-gray-100 dark:bg-gray-700">
-                                            <tr>
-                                                <th scope="col" className="sticky left-0 z-10 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
-                                                    Username
-                                                </th>
-                                                {/* Other headers with responsive text size */}
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Activity Type</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Date</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Time</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Visit Type</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Contact No.</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Email</th>
-                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Device Info</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
-                                            {filteredActivities.map((activity, index) => (
-                                                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                                                    <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {showUserDetails ? activity.userName : "✘"}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.type}</td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {new Date(activity.timestamp).toLocaleDateString()}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {new Date(activity.timestamp).toLocaleTimeString()}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {activity?.metadata?.visitType || "N/A"}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘'}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘'}
-                                                    </td>
-                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                                                        {activity?.metadata?.deviceInfo || "N/A"}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </>
-            ) : (
-                <p className="text-gray-500 dark:text-gray-400 text-center">No data available for this day.</p>
-            )}
-        </div>
-    );
+  return (
+    <div className="mt-8 px-4 sm:px-0">
+      {filteredActivities.length > 0 ? (
+        <>
+          {/* Responsive button grid */}
+          <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3 mb-6">
+            <button
+              onClick={toggleUserDetails}
+              className="w-full sm:w-auto px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-500 dark:hover:bg-blue-400 transition-all duration-300 text-sm sm:text-base"
+            >
+              {showUserDetails ? "Hide User Details" : "Show User Details"}
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-500 dark:hover:bg-green-400 transition-all duration-300 text-sm sm:text-base"
+            >
+              Export to Excel
+            </button>
+            <button
+              onClick={exportToPDF}
+              className="w-full sm:w-auto px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-500 dark:hover:bg-red-400 transition-all duration-300 text-sm sm:text-base"
+            >
+              Export to PDF
+            </button>
+          </div>
+
+          {/* Mobile-optimized table container */}
+          <div className="w-full rounded-xl shadow-xl bg-white dark:bg-gray-800 transition-colors duration-300">
+            <div className="overflow-x-auto">
+              <div className="inline-block min-w-full align-middle">
+                <div className="overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-100 dark:bg-gray-700">
+                      <tr>
+                        <th scope="col" className="sticky left-0 z-10 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
+                          Username
+                        </th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Activity Type</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Entity Type</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Date</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Time</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Visit Type</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Contact No.</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Email</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Device Info</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Sub Locality</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Locality</th>
+                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">City</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                      {filteredActivities.map((activity, index) => (
+                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                          <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {showUserDetails ? activity.userName : "✘"}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.type}</td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.entityType || selectedEntityType}</td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {new Date(activity.timestamp).toLocaleDateString()}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {new Date(activity.timestamp).toLocaleTimeString()}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {activity?.metadata?.visitType || "N/A"}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘'}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {activity?.metadata?.deviceInfo || "N/A"}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {activity?.metadata?.subLocality || "N/A"}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {activity?.metadata?.locality || "N/A"}
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                            {activity?.metadata?.city || "N/A"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <p className="text-gray-500 dark:text-gray-400 text-center">No data available for this day.</p>
+      )}
+    </div>
+  );
 };
 
 export default UserActivityTable;
