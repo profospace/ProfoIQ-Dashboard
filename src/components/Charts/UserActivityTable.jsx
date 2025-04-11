@@ -559,199 +559,249 @@
 
 // export default UserActivityTable;
 
-
 import React, { useState } from 'react';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import html2canvas from 'html2canvas';
 
-const UserActivityTable = ({ 
-  filteredActivities, 
-  lineChartRef, 
-  selectedEntityId, 
-  selectedEntityType, 
-  properties, 
-  projects 
+const UserActivityTable = ({
+    filteredActivities,
+    lineChartRef,
+    selectedEntityId,
+    selectedEntityType,
+    properties,
+    projects,
+    buildings
 }) => {
-  const [showUserDetails, setShowUserDetails] = useState(true);
+    const [showUserDetails, setShowUserDetails] = useState(true);
 
-  const toggleUserDetails = () => {
-    setShowUserDetails((prevState) => !prevState);
-  };
+    const toggleUserDetails = () => {
+        setShowUserDetails((prevState) => !prevState);
+    };
 
-  // Get selected entity title based on type
-  const getSelectedEntityTitle = () => {
-    if (selectedEntityType === 'PROPERTY') {
-      const property = properties.find(p => p.post_id === selectedEntityId);
-      return property ? property.post_title : "Unknown Property";
-    } else if (selectedEntityType === 'PROJECT') {
-      const project = projects.find(p => p.projectId === selectedEntityId);
-      return project ? project.name : "Unknown Project";
-    }
-    return "Unknown Entity";
-  };
+    // Get selected entity name
+    const getSelectedEntityName = () => {
+        if (selectedEntityType === 'PROPERTY') {
+            const property = properties.find(p => p.post_id === selectedEntityId);
+            return property?.post_title || "Unknown Property";
+        } else if (selectedEntityType === 'PROJECT') {
+            const project = projects.find(p => p.projectId === selectedEntityId);
+            return project?.name || "Unknown Project";
+        } else if (selectedEntityType === 'BUILDING') {
+            const building = buildings.find(b => b.buildingId === selectedEntityId);
+            return building?.name || "Unknown Building";
+        }
+        return "Unknown Entity";
+    };
 
-  // Export functions
-  const exportToExcel = () => {
-    const data = filteredActivities.map((activity) => ({
-      Username: showUserDetails ? activity.userName : '✘',
-      EntityType: selectedEntityType,
-      VisitType: activity?.metadata?.visitType || "N/A",
-      Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
-      Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
-      Activity_Type: activity.type ? activity.type : 'N/A',
-      PhoneNo: showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
-      Email: showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
-      Device_Info: activity?.metadata?.deviceInfo || "N/A",
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `${selectedEntityType} Activity`);
-    XLSX.writeFile(wb, `${selectedEntityType.toLowerCase()}_activity.xlsx`);
-  };
+    // Export to Excel with entity type
+    const exportToExcel = () => {
+        const entityName = getSelectedEntityName();
+        const entityTypeName = selectedEntityType.charAt(0) + selectedEntityType.slice(1).toLowerCase();
 
-  const exportToPDF = async () => {
-    const doc = new jsPDF();
-    const entityTitle = getSelectedEntityTitle();
-    const formattedDate = new Date().toLocaleDateString();
+        const data = filteredActivities.map((activity) => ({
+            Username: showUserDetails ? activity.userName : '✘',
+            EntityType: entityTypeName,
+            EntityName: entityName,
+            VisitType: activity?.metadata?.visitType || "N/A",
+            Date: activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : "N/A",
+            Time: activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : "N/A",
+            Activity_Type: activity.type ? activity.type : 'N/A',
+            PhoneNo: showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+            Email: showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+            Device_Info: activity?.metadata?.deviceInfo || "N/A",
+            Location: activity?.location?.formatted || "N/A"
+        }));
 
-    doc.setFontSize(16);
-    doc.text(`${selectedEntityType}: ${entityTitle}`, 10, 10);
-    doc.text(`Date: ${formattedDate}`, 10, 20);
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, `${entityTypeName} Activity`);
+        XLSX.writeFile(wb, `${entityTypeName.toLowerCase()}_activity.xlsx`);
+    };
 
-    const chartContainer = lineChartRef.current;
-    if (!chartContainer) {
-      console.error("Chart container not found.");
-      return;
-    }
+    // Export to PDF with entity type
+    const exportToPDF = async () => {
+        const doc = new jsPDF();
+        const entityName = getSelectedEntityName();
+        const entityTypeName = selectedEntityType.charAt(0) + selectedEntityType.slice(1).toLowerCase();
+        const formattedDate = new Date().toLocaleDateString();
 
-    html2canvas(chartContainer).then((canvas) => {
-      const chartImage = canvas.toDataURL('image/png');
-      doc.addImage(chartImage, 'PNG', 10, 30, 180, 100);
+        doc.setFontSize(16);
+        doc.text(`${entityTypeName}: ${entityName}`, 10, 10);
+        doc.text(`Date: ${formattedDate}`, 10, 20);
 
-      const data = filteredActivities.map((activity) => [
-        showUserDetails ? activity.userName : '✘',
-        activity.type ? activity.type : 'N/A',
-        activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : 'N/A',
-        activity?.metadata?.visitType || "N/A",
-        showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
-        showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
-        activity?.metadata?.deviceInfo || "N/A",
-      ]);
+        const chartContainer = lineChartRef.current;
+        if (!chartContainer) {
+            console.error("Chart container not found.");
+            return;
+        }
 
-      doc.autoTable({
-        startY: 140,
-        head: [['Username', 'Activity Type', 'Time', 'Visit Type', 'Contact No.', 'Email', 'Device Info']],
-        body: data,
-      });
+        try {
+            const canvas = await html2canvas(chartContainer);
+            const chartImage = canvas.toDataURL('image/png');
+            doc.addImage(chartImage, 'PNG', 10, 30, 180, 100);
 
-      doc.save(`${selectedEntityType.toLowerCase()}_activity.pdf`);
-    }).catch((error) => {
-      console.error("Error capturing the chart as an image:", error);
-    });
-  };
+            const data = filteredActivities.map((activity) => [
+                showUserDetails ? activity.userName : '✘',
+                activity.type ? activity.type : 'N/A',
+                activity.timestamp ? new Date(activity.timestamp).toLocaleTimeString() : 'N/A',
+                activity?.metadata?.visitType || "N/A",
+                showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘',
+                showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘',
+                activity?.metadata?.deviceInfo || "N/A",
+            ]);
 
-  return (
-    <div className="mt-8 px-4 sm:px-0">
-      {filteredActivities.length > 0 ? (
-        <>
-          {/* Responsive button grid */}
-          <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3 mb-6">
-            <button
-              onClick={toggleUserDetails}
-              className="w-full sm:w-auto px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-500 dark:hover:bg-blue-400 transition-all duration-300 text-sm sm:text-base"
-            >
-              {showUserDetails ? "Hide User Details" : "Show User Details"}
-            </button>
-            <button
-              onClick={exportToExcel}
-              className="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-500 dark:hover:bg-green-400 transition-all duration-300 text-sm sm:text-base"
-            >
-              Export to Excel
-            </button>
-            <button
-              onClick={exportToPDF}
-              className="w-full sm:w-auto px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-500 dark:hover:bg-red-400 transition-all duration-300 text-sm sm:text-base"
-            >
-              Export to PDF
-            </button>
-          </div>
+            doc.autoTable({
+                startY: 140,
+                head: [['Username', 'Activity Type', 'Time', 'Visit Type', 'Contact No.', 'Email', 'Device Info']],
+                body: data,
+            });
 
-          {/* Mobile-optimized table container */}
-          <div className="w-full rounded-xl shadow-xl bg-white dark:bg-gray-800 transition-colors duration-300">
-            <div className="overflow-x-auto">
-              <div className="inline-block min-w-full align-middle">
-                <div className="overflow-hidden">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-100 dark:bg-gray-700">
-                      <tr>
-                        <th scope="col" className="sticky left-0 z-10 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
-                          Username
-                        </th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Activity Type</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Entity Type</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Date</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Time</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Visit Type</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Contact No.</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Email</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Device Info</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Sub Locality</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Locality</th>
-                        <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">City</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
-                      {filteredActivities.map((activity, index) => (
-                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
-                          <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {showUserDetails ? activity.userName : "✘"}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.type}</td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">{activity.entityType || selectedEntityType}</td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {new Date(activity.timestamp).toLocaleDateString()}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {new Date(activity.timestamp).toLocaleTimeString()}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {activity?.metadata?.visitType || "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘'}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘'}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {activity?.metadata?.deviceInfo || "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {activity?.metadata?.subLocality || "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {activity?.metadata?.locality || "N/A"}
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
-                            {activity?.metadata?.city || "N/A"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+            doc.save(`${entityTypeName.toLowerCase()}_activity.pdf`);
+        } catch (error) {
+            console.error("Error capturing the chart as an image:", error);
+        }
+    };
+
+    return (
+        <div className="mt-8 px-4 sm:px-0">
+            {filteredActivities.length > 0 ? (
+                <>
+                    {/* Entity type indicator */}
+                    <div className="flex items-center mb-4">
+                        <div className={`px-3 py-1 rounded-full text-white text-xs font-semibold mr-2
+                            ${selectedEntityType === 'PROPERTY' ? 'bg-blue-600' :
+                                selectedEntityType === 'PROJECT' ? 'bg-purple-600' : 'bg-orange-600'}`}>
+                            {selectedEntityType}
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
+                            {getSelectedEntityName()}
+                        </h3>
+                    </div>
+
+                    {/* Responsive button grid */}
+                    <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-3 mb-6">
+                        <button
+                            onClick={toggleUserDetails}
+                            className="w-full sm:w-auto px-4 py-2 bg-blue-600 dark:bg-blue-500 text-white rounded-lg shadow-lg hover:bg-blue-500 dark:hover:bg-blue-400 transition-all duration-300 text-sm sm:text-base"
+                        >
+                            {showUserDetails ? "Hide User Details" : "Show User Details"}
+                        </button>
+                        <button
+                            onClick={exportToExcel}
+                            className="w-full sm:w-auto px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-lg shadow-lg hover:bg-green-500 dark:hover:bg-green-400 transition-all duration-300 text-sm sm:text-base"
+                        >
+                            Export to Excel
+                        </button>
+                        <button
+                            onClick={exportToPDF}
+                            className="w-full sm:w-auto px-4 py-2 bg-red-600 dark:bg-red-500 text-white rounded-lg shadow-lg hover:bg-red-500 dark:hover:bg-red-400 transition-all duration-300 text-sm sm:text-base"
+                        >
+                            Export to PDF
+                        </button>
+                    </div>
+
+                    {/* Mobile-optimized table container */}
+                    <div className="w-full rounded-xl shadow-xl bg-white dark:bg-gray-800 transition-colors duration-300">
+                        <div className="overflow-x-auto">
+                            <div className="inline-block min-w-full align-middle">
+                                <div className="overflow-hidden">
+                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead className="bg-gray-100 dark:bg-gray-700">
+                                            <tr>
+                                                <th scope="col" className="sticky left-0 z-10 bg-gray-100 dark:bg-gray-700 px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
+                                                    Username
+                                                </th>
+                                                {/* Activity type with color indicator */}
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">
+                                                    Activity Type
+                                                </th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Date</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Time</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Visit Type</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Contact No.</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Email</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Device Info</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Sub Locality</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">Locality</th>
+                                                <th scope="col" className="px-4 py-3 text-left text-xs sm:text-sm font-semibold text-gray-600 dark:text-gray-200">City</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                                            {filteredActivities.map((activity, index) => (
+                                                <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-200">
+                                                    <td className="sticky left-0 z-10 bg-white dark:bg-gray-800 whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {showUserDetails ? activity.userName : "✘"}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        <span className={`px-2 py-1 rounded-full text-xs font-medium
+                                                            ${activity.type === 'VISIT' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' :
+                                                                activity.type === 'CONTACT' ? 'bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100' :
+                                                                    activity.type === 'SAVE' ? 'bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100' :
+                                                                        activity.type === 'CALLBACK' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' :
+                                                                            'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                                            {activity.type}
+                                                        </span>
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {new Date(activity.timestamp).toLocaleDateString()}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {new Date(activity.timestamp).toLocaleTimeString()}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {activity?.metadata?.visitType ? (
+                                                            <span className={`px-2 py-1 rounded-full text-xs font-medium
+                                                                ${activity.metadata.visitType === 'VIRTUAL' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-800 dark:text-indigo-100' :
+                                                                    'bg-orange-100 text-orange-800 dark:bg-orange-800 dark:text-orange-100'}`}>
+                                                                {activity.metadata.visitType}
+                                                            </span>
+                                                        ) : "N/A"}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {showUserDetails ? (activity?.contactInfo?.phoneNumber || 'N/A') : '✘'}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {showUserDetails ? (activity?.contactInfo?.email || 'N/A') : '✘'}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {activity?.metadata?.deviceInfo || "N/A"}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {activity?.metadata?.subLocality || "N/A"}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {activity?.metadata?.locality || "N/A"}
+                                                    </td>
+                                                    <td className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                                                        {activity?.metadata?.city || "N/A"}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <div className="py-8 text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
+                        <svg className="w-8 h-8 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400 text-lg">No data available for this day.</p>
+                    <p className="text-gray-400 dark:text-gray-500 mt-2">
+                        Try selecting a different date or entity to view activity data.
+                    </p>
                 </div>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <p className="text-gray-500 dark:text-gray-400 text-center">No data available for this day.</p>
-      )}
-    </div>
-  );
+            )}
+        </div>
+    );
 };
 
 export default UserActivityTable;
+

@@ -374,6 +374,8 @@ import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
+import PropertiesInteractions from './pages/Dashboard/PropertiesInteractions';
+import ProjectsInteractions from './pages/Dashboard/ProjectsInteractions';
 import FormElements from './pages/Form/FormElements';
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
@@ -460,8 +462,30 @@ function App() {
         element={
           <PrivateRoute>
             <DefaultLayout>
-              <PageTitle title="Calendar" />
+              <PageTitle title="PROFO IQ Dashboard" />
               <Calendar />
+            </DefaultLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/interactions/properties"
+        element={
+          <PrivateRoute>
+            <DefaultLayout>
+              <PageTitle title="PROFO IQ Dashboard" />
+              <PropertiesInteractions />
+            </DefaultLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/interactions/projects"
+        element={
+          <PrivateRoute>
+            <DefaultLayout>
+              <PageTitle title="PROFO IQ Dashboard" />
+              <ProjectsInteractions />
             </DefaultLayout>
           </PrivateRoute>
         }
