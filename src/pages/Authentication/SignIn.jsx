@@ -335,8 +335,8 @@ import Logo from '../../images/logo/logo.svg';
 import { base_url } from '../../../utils/base_url';
 
 const SignIn = () => {
-  const [username, setUsername] = useState('anuragbuilders3462');
-  const [password, setPassword] = useState('pjBVMW0h');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
