@@ -70,7 +70,7 @@
 //           /> */}
 
 // {/* Protected Routes */}
-      
+
 //         <Route
 //           index
 //           element={
@@ -173,7 +173,7 @@
 //             </>
 //           }
 //         />
-        
+
 //       </Routes>
 //   );
 // }
@@ -242,7 +242,7 @@
 //     setTimeout(() => setLoading(false), 1000);
 //   }, []);
 
-  
+
 
 //   return loading ? (
 //     <Loader />
@@ -374,6 +374,8 @@ import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
+import UnifiedInteractions from './pages/Dashboard/UnifiedInteractions';
+import InteractionDetail from './pages/Dashboard/InteractionDetail';
 import PropertiesInteractions from './pages/Dashboard/PropertiesInteractions';
 import ProjectsInteractions from './pages/Dashboard/ProjectsInteractions';
 import FormElements from './pages/Form/FormElements';
@@ -447,12 +449,47 @@ function App() {
       />
       {/* Protected Routes */}
       <Route
-        index
-        element={
+        index element={
           <PrivateRoute>
             <DefaultLayout>
               <PageTitle title="PROFO IQ Dashboard" />
-              <ECommerce />
+              <UnifiedInteractions />
+            </DefaultLayout>
+          </PrivateRoute>
+        }
+      />
+        <Route
+          path='dashboard'
+          element={
+            <PrivateRoute>
+              <DefaultLayout>
+                <PageTitle title="PROFO IQ Dashboard" />
+                <ECommerce />
+              </DefaultLayout>
+            </PrivateRoute>
+          }
+        />
+        {/* Property interaction detail routes */}
+        {/* <Route path="/property-interaction/:entityId" element={<InteractionDetail />} /> */}
+
+        {/* Project interaction detail routes */}
+        {/* <Route path="/project-interaction/:entityId" element={<InteractionDetail />} /> */}
+      <Route
+          path='/property-interaction/:entityId' element={
+          <PrivateRoute>
+            <DefaultLayout>
+              <PageTitle title="PROFO IQ Dashboard" />
+                <InteractionDetail />
+            </DefaultLayout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+          path='/project-interaction/:entityId' element={
+          <PrivateRoute>
+            <DefaultLayout>
+              <PageTitle title="PROFO IQ Dashboard" />
+                <InteractionDetail />
             </DefaultLayout>
           </PrivateRoute>
         }
