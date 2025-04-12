@@ -2082,7 +2082,7 @@ const UnifiedInteractions = () => {
     };
 
     return (
-        <div className="p-4 sm:p-6 lg:p-2 bg-gray-100 min-h-screen">
+        <div className="p-4 sm:p-4 lg:p-2 bg-gray-100 min-h-screen">
             <h1 className="text-xl sm:text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6">
                 All Interactions
             </h1>
